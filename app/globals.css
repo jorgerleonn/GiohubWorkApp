@@ -29,7 +29,7 @@
   --color-ring: #FF4C4C;
 }
 
-* {
+body {
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
