@@ -7,15 +7,15 @@ import { getUserId } from '@/lib/clerk'
 
 export async function createSesion(datos: SesionCreate): Promise<Sesion> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
-  if (!userId) {
+  if (!clerkId) {
     throw new Error('No autenticado')
   }
 
   const { data, error } = await supabase
     .from('sesiones_estudio')
-    .insert({ ...datos, user_id: userId })
+    .insert({ ...datos, clerk_id: clerkId })
     .select()
     .single()
 
@@ -29,7 +29,7 @@ export async function createSesion(datos: SesionCreate): Promise<Sesion> {
 
 export async function getSesionesRecientes(limit: number = 10): Promise<SesionConAsignatura[]> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
   const { data, error } = await supabase
     .from('sesiones_estudio')
@@ -37,7 +37,7 @@ export async function getSesionesRecientes(limit: number = 10): Promise<SesionCo
       *,
       asignatura:asignaturas(*)
     `)
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
     .order('created_at', { ascending: false })
     .limit(limit)
 
@@ -51,7 +51,7 @@ export async function getSesionesRecientes(limit: number = 10): Promise<SesionCo
 
 export async function getSesionesHoy(): Promise<SesionConAsignatura[]> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
   const hoy = getToday()
 
   const { data, error } = await supabase
@@ -60,7 +60,7 @@ export async function getSesionesHoy(): Promise<SesionConAsignatura[]> {
       *,
       asignatura:asignaturas(*)
     `)
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
     .eq('fecha', hoy)
     .order('created_at', { ascending: false })
 

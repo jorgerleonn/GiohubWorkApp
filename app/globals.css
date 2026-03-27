@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+  --color-giohub-bg-dark: #1C1C1C;
+  --color-giohub-card: #2C2C2C;
+  --color-giohub-card-secondary: #333333;
+  --color-giohub-primary: #FF4C4C;
+  --color-giohub-primary-hover: #FF7F50;
+  --color-giohub-success: #4CAF50;
+  --color-giohub-orange: #CA5C45;
+  --color-giohub-red: #A54040;
+  --color-giohub-turquoise: #40A5A4;
+  --color-giohub-gray: #555555;
+}
+
+* {
+  background-color: var(--color-giohub-bg-dark);
+  color: white;
+}

@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+# GiohubWorkApp
+=======
 # 🎯 GIOHUB - Gestión de Estudio
 
 Aplicación web Full-Stack para seguimiento de sesiones de estudio con técnica Pomodoro/Flowtime, estadísticas visuales e integración con Google Calendar.
@@ -209,3 +212,4 @@ MIT
 ---
 
 **Desarrollado con Next.js 16 + TypeScript + Supabase**
+>>>>>>> c3b0821 (Primer commit: Estructura base de GIOHUB)

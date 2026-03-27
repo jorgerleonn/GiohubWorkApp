@@ -11,7 +11,7 @@ import { Select } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Timer } from '@/components/work/Timer'
 import { getAsignaturas } from '@/lib/actions/asignaturas'
-import { createSesion, getSesionesHoy } from '@/lib/actions/sesiones'
+import { createSesion, getSesionesHoy, deleteSesion } from '@/lib/actions/sesiones'
 import { Asignatura, SesionConAsignatura } from '@/lib/types'
 import { formatTime, getDayOfWeek, getToday, minutesToHoursMinutes } from '@/lib/utils'
 
@@ -119,6 +119,17 @@ export default function WorkPage() {
   const mostrarMensaje = (tipo: 'success' | 'error', texto: string) => {
     setMensaje({ tipo, texto })
     setTimeout(() => setMensaje(null), 4000)
+  }
+
+  const handleEliminarSesion = async (sesionId: string) => {
+    if (!confirm('¿Eliminar esta sesión?')) return
+    try {
+      await deleteSesion(sesionId)
+      mostrarMensaje('success', 'Sesión eliminada')
+      await cargarDatos()
+    } catch (error) {
+      mostrarMensaje('error', 'Error al eliminar sesión')
+    }
   }
 
   if (!isLoaded) {
@@ -275,13 +286,22 @@ export default function WorkPage() {
                           <p className="text-sm text-gray-400">{sesion.tipo_tarea}</p>
                         )}
                       </div>
-                      <div className="text-right">
-                        <p className="text-white font-mono text-sm">
-                          {sesion.hora_inicio.slice(0, 5)} - {sesion.hora_final.slice(0, 5)}
-                        </p>
-                        <p className="text-sm text-gray-400">
-                          {minutesToHoursMinutes(sesion.minutos_estudio)}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-white font-mono text-sm">
+                            {sesion.hora_inicio.slice(0, 5)} - {sesion.hora_final.slice(0, 5)}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {minutesToHoursMinutes(sesion.minutos_estudio)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleEliminarSesion(sesion.id)}
+                          className="text-giohub-primary hover:text-giohub-primary-hover p-1"
+                          title="Eliminar sesión"
+                        >
+                          ✕
+                        </button>
                       </div>
                     </div>
                   ))}

@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
-      <html lang="es">
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
+      <html lang="es" data-theme="dark">
         <body className="bg-giohub-bg-dark text-white antialiased">
           {children}
         </body>

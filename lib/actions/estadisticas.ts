@@ -11,13 +11,13 @@ import { getUserId } from '@/lib/clerk'
 
 export async function getMinutosHoy(): Promise<EstadisticaMinutosHoy> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
   const hoy = getToday()
 
   const { data, error } = await supabase
     .from('sesiones_estudio')
     .select('minutos_estudio')
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
     .eq('fecha', hoy)
 
   if (error) {
@@ -36,7 +36,7 @@ export async function getMinutosHoy(): Promise<EstadisticaMinutosHoy> {
 
 export async function getHorasPorAsignatura(): Promise<EstadisticaPorAsignatura[]> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
   const { data, error } = await supabase
     .from('sesiones_estudio')
@@ -44,7 +44,7 @@ export async function getHorasPorAsignatura(): Promise<EstadisticaPorAsignatura[
       minutos_estudio,
       asignatura:asignaturas(id, nombre, color)
     `)
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
 
   if (error) {
     console.error('Error al obtener estadísticas por asignatura:', error)
@@ -84,7 +84,7 @@ export async function getHorasPorAsignatura(): Promise<EstadisticaPorAsignatura[
 
 export async function getHorasPorDia(dias: number = 30): Promise<EstadisticaPorDia[]> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
   const fechaInicio = new Date()
   fechaInicio.setDate(fechaInicio.getDate() - dias)
@@ -93,7 +93,7 @@ export async function getHorasPorDia(dias: number = 30): Promise<EstadisticaPorD
   const { data, error } = await supabase
     .from('sesiones_estudio')
     .select('fecha, minutos_estudio')
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
     .gte('fecha', fechaInicioStr)
     .order('fecha', { ascending: true })
 

@@ -1,7 +1,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const publicRoutes = ['/', '/api/webhooks/clerk']
+const publicRoutes = ['/', '/sign-in', '/sign-up', '/api/webhooks/clerk']
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth()

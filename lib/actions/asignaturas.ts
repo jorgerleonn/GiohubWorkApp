@@ -6,12 +6,12 @@ import { getUserId } from '@/lib/clerk'
 
 export async function getAsignaturas(): Promise<Asignatura[]> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
   const { data, error } = await supabase
     .from('asignaturas')
     .select('*')
-    .eq('user_id', userId)
+    .eq('clerk_id', clerkId)
     .order('nombre')
 
   if (error) {
@@ -24,15 +24,15 @@ export async function getAsignaturas(): Promise<Asignatura[]> {
 
 export async function createAsignatura(datos: AsignaturaCreate): Promise<Asignatura> {
   const supabase = createServerClient()
-  const userId = await getUserId()
+  const clerkId = await getUserId()
 
-  if (!userId) {
+  if (!clerkId) {
     throw new Error('No autenticado')
   }
 
   const { data, error } = await supabase
     .from('asignaturas')
-    .insert({ ...datos, user_id: userId })
+    .insert({ ...datos, clerk_id: clerkId })
     .select()
     .single()
 

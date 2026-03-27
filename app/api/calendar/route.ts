@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { CalendarEventData } from '@/lib/types'
+import { auth } from '@clerk/nextjs/server'
+import { clerkClient } from '@/lib/clerk-client'
 
-// POST /api/calendar - Crear evento en Google Calendar
+// POST /api/calendar - Crear evento en Google Calendar del usuario
 export async function POST(req: NextRequest) {
   try {
+    const { userId } = await auth()
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'No autenticado' },
+        { status: 401 }
+      )
+    }
+
     const body: CalendarEventData = await req.json()
     const { asignatura, tipo_tarea, fecha, hora_inicio, hora_final } = body
     
-    // Validar datos requeridos
     if (!asignatura || !fecha || !hora_inicio || !hora_final) {
       return NextResponse.json(
         { error: 'Faltan datos requeridos' },
@@ -16,26 +26,27 @@ export async function POST(req: NextRequest) {
       )
     }
     
-    // Configurar autenticación con service account
-    const serviceAccountJSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-    if (!serviceAccountJSON) {
+    // Obtener token de Google desde Clerk
+    console.log('User ID:', userId)
+    const oauthAccessTokenResponse = await clerkClient.users.getUserOauthAccessToken(userId, 'google')
+    console.log('OAuth Response:', JSON.stringify(oauthAccessTokenResponse, null, 2))
+    const googleToken = oauthAccessTokenResponse.data[0]?.token
+    console.log('Google Token:', googleToken ? 'EXISTS' : 'MISSING')
+    
+    if (!googleToken) {
       return NextResponse.json(
-        { error: 'No se ha configurado la cuenta de servicio de Google' },
-        { status: 500 }
+        { error: 'Google Calendar no conectado. Conecta tu cuenta de Google en tu perfil.' },
+        { status: 401 }
       )
     }
     
-    const credentials = JSON.parse(serviceAccountJSON)
+    // Autenticación con el token del usuario
+    const authObj = new google.auth.OAuth2()
+    authObj.setCredentials({ access_token: googleToken })
     
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
-    })
-    
-    const calendar = google.calendar({ version: 'v3', auth })
+    const calendar = google.calendar({ version: 'v3', auth: authObj })
     
     // Convertir fecha y hora al formato correcto (ISO 8601)
-    // fecha viene como "YYYY-MM-DD", hora como "HH:MM:SS"
     const [year, month, day] = fecha.split('-')
     const [horaI, minI, segI] = hora_inicio.split(':')
     const [horaF, minF, segF] = hora_final.split(':')
@@ -46,7 +57,7 @@ export async function POST(req: NextRequest) {
       parseInt(day),
       parseInt(horaI),
       parseInt(minI),
-      parseInt(segI)
+      parseInt(segI || '0')
     )
     
     const fin = new Date(
@@ -55,13 +66,13 @@ export async function POST(req: NextRequest) {
       parseInt(day),
       parseInt(horaF),
       parseInt(minF),
-      parseInt(segF)
+      parseInt(segF || '0')
     )
     
     // Crear evento
     const event = {
-      summary: asignatura,
-      description: tipo_tarea || '',
+      summary: `📚 ${asignatura}`,
+      description: tipo_tarea || 'Sesión de estudio GIOHUB',
       start: {
         dateTime: inicio.toISOString(),
         timeZone: 'Europe/Madrid',
@@ -72,9 +83,9 @@ export async function POST(req: NextRequest) {
       },
     }
     
-    const calendarId = process.env.GOOGLE_CALENDAR_ID || 'primary'
+    // Usar el calendario principal del usuario
     const response = await calendar.events.insert({
-      calendarId,
+      calendarId: 'primary',
       requestBody: event,
     })
     
