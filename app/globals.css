@@ -11,9 +11,25 @@
   --color-giohub-red: #A54040;
   --color-giohub-turquoise: #40A5A4;
   --color-giohub-gray: #555555;
+
+  --color-background: #1C1C1C;
+  --color-foreground: #ffffff;
+  --color-primary: #FF4C4C;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #333333;
+  --color-secondary-foreground: #ffffff;
+  --color-muted: #555555;
+  --color-muted-foreground: #aaaaaa;
+  --color-accent: #333333;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #A54040;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #555555;
+  --color-input: #333333;
+  --color-ring: #FF4C4C;
 }
 
 * {
-  background-color: var(--color-giohub-bg-dark);
-  color: white;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
