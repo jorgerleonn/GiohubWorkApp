@@ -8,7 +8,7 @@ import { PieChartNeon } from '@/components/stats/PieChartNeon'
 import { BarStackNeon } from '@/components/stats/BarStackNeon'
 import { LineChartNeon } from '@/components/stats/LineChartNeon'
 import { getMinutosHoy, getHorasPorAsignatura, getHorasPorDia } from '@/lib/actions/estadisticas'
-import { getSesionesRecientes } from '@/lib/actions/sesiones'
+import { getSesionesRecientes, deleteSesion } from '@/lib/actions/sesiones'
 import { 
   EstadisticaMinutosHoy, 
   EstadisticaPorAsignatura, 
@@ -16,7 +16,7 @@ import {
   SesionConAsignatura 
 } from '@/lib/types'
 import { minutesToHoursMinutes, formatDate } from '@/lib/utils'
-import { Clock, BookOpen, FileText, TrendingUp } from 'lucide-react'
+import { Clock, BookOpen, FileText, TrendingUp, Trash2 } from 'lucide-react'
 
 export default function StatsPage() {
   const { isSignedIn, isLoaded } = useUser()
@@ -26,6 +26,7 @@ export default function StatsPage() {
   const [sesionesRecientes, setSesionesRecientes] = useState<SesionConAsignatura[]>([])
   const [diasMostrar, setDiasMostrar] = useState(30)
   const [loading, setLoading] = useState(true)
+  const [mensaje, setMensaje] = useState<{tipo: 'success' | 'error', texto: string} | null>(null)
 
   useEffect(() => {
     cargarEstadisticas()
@@ -49,6 +50,19 @@ export default function StatsPage() {
       console.error('Error al cargar estadísticas:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleEliminarSesion = async (sesionId: string) => {
+    if (!confirm('¿Eliminar esta sesión?')) return
+    try {
+      await deleteSesion(sesionId)
+      setMensaje({ tipo: 'success', texto: 'Sesión eliminada' })
+      setTimeout(() => setMensaje(null), 3000)
+      await cargarEstadisticas()
+    } catch (error) {
+      setMensaje({ tipo: 'error', texto: 'Error al eliminar sesión' })
+      setTimeout(() => setMensaje(null), 3000)
     }
   }
 
@@ -189,6 +203,16 @@ export default function StatsPage() {
             Sesiones Recientes
           </h2>
           
+          {mensaje && (
+            <div className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+              mensaje.tipo === 'success' 
+                ? 'bg-deepworkos-success/10 text-deepworkos-success border border-deepworkos-success/30' 
+                : 'bg-deepworkos-primary/10 text-deepworkos-primary border border-deepworkos-primary/30'
+            }`}>
+              {mensaje.texto}
+            </div>
+          )}
+          
           {sesionesRecientes.length === 0 ? (
             <p className="text-deepworkos-text-muted text-center py-8">
               No hay sesiones registradas todavía
@@ -203,6 +227,7 @@ export default function StatsPage() {
                     <th className="text-left py-3 px-2 text-deepworkos-text-muted font-medium">Tarea</th>
                     <th className="text-left py-3 px-2 text-deepworkos-text-muted font-medium">Horario</th>
                     <th className="text-right py-3 px-2 text-deepworkos-text-muted font-medium">Duración</th>
+                    <th className="py-3 px-2"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -235,6 +260,14 @@ export default function StatsPage() {
                       </td>
                       <td className="py-3 px-2 text-right text-white font-medium">
                         {minutesToHoursMinutes(sesion.minutos_estudio)}
+                      </td>
+                      <td className="py-3 px-2">
+                        <button
+                          onClick={() => handleEliminarSesion(sesion.id)}
+                          className="text-deepworkos-primary hover:text-deepworkos-primary-hover p-1"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
                     </tr>
                   ))}
