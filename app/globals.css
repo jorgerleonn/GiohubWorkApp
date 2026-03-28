@@ -161,3 +161,20 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
 }
+
+.clerk-root {
+  --clerk-color-primary: #00d4ff !important;
+  --clerk-color-primary-hover: #00b8e6 !important;
+  --clerk-color-primary-contained: #00d4ff !important;
+  --clerk-color-primary-contained-hover: #00b8e6 !important;
+  --clerk-color-text-on-primary-contained: #ffffff !important;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(0, 212, 255, 0.6); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

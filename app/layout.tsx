@@ -18,6 +18,7 @@ export default function RootLayout({
       appearance={{
         variables: {
           colorPrimary: '#00d4ff',
+          colorPrimaryHover: '#00b8e6',
           colorTextOnPrimaryBackground: '#ffffff',
           colorBackground: '#16161f',
           colorInputBackground: '#1e1e2a',
@@ -30,6 +31,9 @@ export default function RootLayout({
           fontFamily: 'system-ui, -apple-system, sans-serif',
           spacingUnit: '4px',
           zIndex: '100',
+        },
+        layout: {
+          unsafe_disableDevelopmentModeWarnings: true,
         },
         elements: {
           formButtonPrimary: 'bg-gradient-to-r from-[#00d4ff] to-[#00a8cc] hover:from-[#00b8e6] hover:to-[#0099bb] text-white shadow-lg shadow-cyan-500/25',
