@@ -115,7 +115,7 @@ export default function ConfigPage() {
   return (
     <AppLayout>
       <main className="min-h-screen p-8">
-        <div className="max-w-2xl mx-auto">
+        <div>
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">
               <span className="text-deepworkos-purple" style={{ textShadow: '0 0 10px rgba(191,90,242,0.5)' }}>Configuración</span>
@@ -123,7 +123,7 @@ export default function ConfigPage() {
             <p className="text-deepworkos-text-muted">Administra tus asignaturas</p>
           </div>
 
-          <Card className="bg-deepworkos-card border-deepworkos-border">
+          <Card className="bg-deepworkos-card border-deepworkos-border w-full">
             <CardContent className="p-6 space-y-6">
               {mensaje && (
                 <div className={`p-3 rounded-md text-sm font-medium ${

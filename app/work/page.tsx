@@ -26,7 +26,7 @@ export default function WorkPage() {
   const [sesionesHoy, setSesionesHoy] = useState<SesionConAsignatura[]>([])
   const [totalMinutosHoy, setTotalMinutosHoy] = useState(0)
   const [mensaje, setMensaje] = useState<{tipo: 'success' | 'error', texto: string} | null>(null)
-  const [syncCalendar, setSyncCalendar] = useState(false)
+  const [syncCalendar, setSyncCalendar] = useState(true)
   const [horaActual, setHoraActual] = useState('')
   const [ubicacion, setUbicacion] = useState<string | null>(null)
 
@@ -198,7 +198,7 @@ export default function WorkPage() {
       <main className="min-h-screen p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">
-            <span className="text-deepworkos-primary" style={{ textShadow: '0 0 10px rgba(255,76,76,0.5)' }}>Work</span> / Pomodoro
+            <span className="text-[#ff4c4c]" style={{ textShadow: '0 0 10px rgba(255,76,76,0.5)' }}>Work</span> / Pomodoro
           </h1>
           <p className="text-deepworkos-text-muted">Inicia una sesión de estudio</p>
         </div>
