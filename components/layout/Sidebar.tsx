@@ -19,12 +19,17 @@ const navItems = [
   { href: '/config', label: 'Configuración', icon: Settings },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean
+  onClose?: () => void
+}
+
+export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const { user } = useUser()
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-deepworkos-card border-r border-deepworkos-border flex flex-col z-50">
+    <aside className={`fixed left-0 top-0 h-screen w-64 bg-deepworkos-card border-r border-deepworkos-border flex flex-col z-50 transition-transform duration-300 md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="p-6">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-deepworkos-turquoise to-deepworkos-purple flex items-center justify-center">
