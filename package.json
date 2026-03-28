@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "install": "npm config set legacy-peer-deps true && npm install"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.0.7",
