@@ -7,9 +7,9 @@
   --color-deepworkos-card-secondary: #1e1e2a;
   --color-deepworkos-card-hover: #252533;
   --color-deepworkos-border: #2a2a3a;
-  --color-deepworkos-primary: #ff4c4c;
-  --color-deepworkos-primary-hover: #ff7f50;
-  --color-deepworkos-primary-glow: rgba(255, 76, 76, 0.4);
+  --color-deepworkos-primary: #00d4ff;
+  --color-deepworkos-primary-hover: #00b8e6;
+  --color-deepworkos-primary-glow: rgba(0, 212, 255, 0.4);
   --color-deepworkos-success: #00ff88;
   --color-deepworkos-success-glow: rgba(0, 255, 136, 0.4);
   --color-deepworkos-turquoise: #00d4ff;
@@ -35,7 +35,7 @@
 
   --color-background: #0a0a0f;
   --color-foreground: #ffffff;
-  --color-primary: #ff4c4c;
+  --color-primary: #00d4ff;
   --color-primary-foreground: #ffffff;
   --color-secondary: #1e1e2a;
   --color-secondary-foreground: #ffffff;
@@ -47,7 +47,7 @@
   --color-destructive-foreground: #ffffff;
   --color-border: #2a2a3a;
   --color-input: #1e1e2a;
-  --color-ring: #ff4c4c;
+  --color-ring: #00d4ff;
 }
 
 * {
@@ -168,6 +168,32 @@ input:focus, select:focus, textarea:focus {
   --clerk-color-primary-contained: #00d4ff !important;
   --clerk-color-primary-contained-hover: #00b8e6 !important;
   --clerk-color-text-on-primary-contained: #ffffff !important;
+}
+
+.clerk-root [class*="socialButtons"],
+.clerk-root [class*="SocialButtons"],
+.clerk-root [class*="googleButton"],
+.clerk-root [class*="GoogleButton"] {
+  color: #ffffff !important;
+}
+
+.clerk-root [class*="footerText"],
+.clerk-root [class*="FooterText"],
+.clerk-root [class*="dividerText"],
+.clerk-root [class*="DividerText"] {
+  color: #ffffff !important;
+}
+
+.clerk-root [class*="footer"],
+.clerk-root [class*="Footer"],
+.clerk-root [class*="mainFooter"] {
+  color: #ffffff !important;
+  background-color: #282834 !important;
+}
+
+.clerk-root [class*="footerAction"],
+.clerk-root [class*="footerActionText"] {
+  color: #ffffff !important;
 }
 
 @keyframes pulse-glow {

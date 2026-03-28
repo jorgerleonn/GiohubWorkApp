@@ -9,7 +9,7 @@ import {
   BarChart3, 
   Settings, 
   LogOut,
-  Sparkles
+  Hourglass
 } from 'lucide-react'
 
 const navItems = [
@@ -33,7 +33,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       <div className="p-6">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-deepworkos-turquoise to-deepworkos-purple flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white" />
+            <Hourglass className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl font-bold text-white tracking-tight">
             DeepWorkOS
