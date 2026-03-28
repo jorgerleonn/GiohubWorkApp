@@ -1,4 +1,3 @@
 {
-  "buildCommand": "npm config set legacy-peer-deps true && npm install",
-  "installCommand": "npm config set legacy-peer-deps true && npm install"
+  "installCommand": "npm install"
 }
