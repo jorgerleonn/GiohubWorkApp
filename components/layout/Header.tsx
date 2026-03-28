@@ -9,9 +9,9 @@ export function Header() {
   if (!isSignedIn) return null
 
   return (
-    <header className="flex items-center justify-between p-4 bg-giohub-card border-b border-giohub-gray/20">
+    <header className="flex items-center justify-between p-4 bg-deepworkos-card border-b border-deepworkos-gray/20">
       <Link href="/" className="text-2xl font-bold text-white">
-        GIOHUB
+        DeepWorkOS
       </Link>
       
       <div className="flex items-center gap-4">

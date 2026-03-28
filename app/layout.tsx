@@ -3,7 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'GIOHUB - Gestión de Estudio',
+  title: 'DeepWorkOS - Gestión de Estudio',
   description: 'Aplicación de seguimiento de sesiones de estudio con técnica Pomodoro/Flowtime',
 }
 
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
       <html lang="es" data-theme="dark">
-        <body className="bg-giohub-bg-dark text-white antialiased">
+        <body className="bg-deepworkos-bg-dark text-white antialiased">
           {children}
         </body>
       </html>

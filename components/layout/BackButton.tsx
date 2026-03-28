@@ -10,7 +10,7 @@ export function BackButton() {
     <Button
       onClick={() => router.push('/')}
       variant="secondary"
-      className="bg-giohub-card-secondary hover:bg-giohub-gray"
+      className="bg-deepworkos-card-secondary hover:bg-deepworkos-gray"
     >
       ⬅ Volver al menú
     </Button>

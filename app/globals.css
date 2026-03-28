@@ -1,35 +1,163 @@
 @import "tailwindcss";
 
 @theme {
-  --color-giohub-bg-dark: #1C1C1C;
-  --color-giohub-card: #2C2C2C;
-  --color-giohub-card-secondary: #333333;
-  --color-giohub-primary: #FF4C4C;
-  --color-giohub-primary-hover: #FF7F50;
-  --color-giohub-success: #4CAF50;
-  --color-giohub-orange: #CA5C45;
-  --color-giohub-red: #A54040;
-  --color-giohub-turquoise: #40A5A4;
-  --color-giohub-gray: #555555;
+  --color-deepworkos-bg-dark: #0a0a0f;
+  --color-deepworkos-bg-dark-secondary: #12121a;
+  --color-deepworkos-card: #16161f;
+  --color-deepworkos-card-secondary: #1e1e2a;
+  --color-deepworkos-card-hover: #252533;
+  --color-deepworkos-border: #2a2a3a;
+  --color-deepworkos-primary: #ff4c4c;
+  --color-deepworkos-primary-hover: #ff7f50;
+  --color-deepworkos-primary-glow: rgba(255, 76, 76, 0.4);
+  --color-deepworkos-success: #00ff88;
+  --color-deepworkos-success-glow: rgba(0, 255, 136, 0.4);
+  --color-deepworkos-turquoise: #00d4ff;
+  --color-deepworkos-turquoise-glow: rgba(0, 212, 255, 0.4);
+  --color-deepworkos-purple: #bf5af2;
+  --color-deepworkos-purple-glow: rgba(191, 90, 242, 0.4);
+  --color-deepworkos-orange: #ff9f43;
+  --color-deepworkos-orange-glow: rgba(255, 159, 67, 0.4);
+  --color-deepworkos-red: #ff6b6b;
+  --color-deepworkos-red-glow: rgba(255, 107, 107, 0.4);
+  --color-deepworkos-gray: #555555;
+  --color-deepworkos-gray-light: #888899;
+  --color-deepworkos-text: #ffffff;
+  --color-deepworkos-text-muted: #aaaabc;
 
-  --color-background: #1C1C1C;
+  --color-neon-cyan: #00ffff;
+  --color-neon-magenta: #ff00ff;
+  --color-neon-green: #00ff88;
+  --color-neon-purple: #bf5af2;
+  --color-neon-blue: #00d4ff;
+  --color-neon-pink: #ff6b9d;
+  --color-neon-yellow: #ffd93d;
+
+  --color-background: #0a0a0f;
   --color-foreground: #ffffff;
-  --color-primary: #FF4C4C;
+  --color-primary: #ff4c4c;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #333333;
+  --color-secondary: #1e1e2a;
   --color-secondary-foreground: #ffffff;
-  --color-muted: #555555;
-  --color-muted-foreground: #aaaaaa;
-  --color-accent: #333333;
+  --color-muted: #2a2a3a;
+  --color-muted-foreground: #aaaabc;
+  --color-accent: #252533;
   --color-accent-foreground: #ffffff;
-  --color-destructive: #A54040;
+  --color-destructive: #ff6b6b;
   --color-destructive-foreground: #ffffff;
-  --color-border: #555555;
-  --color-input: #333333;
-  --color-ring: #FF4C4C;
+  --color-border: #2a2a3a;
+  --color-input: #1e1e2a;
+  --color-ring: #ff4c4c;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a3a #0a0a0f;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #3a3a4a;
 }
 
 body {
-  background-color: var(--color-background);
+  background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0f0f1a 100%);
   color: var(--color-foreground);
+  min-height: 100vh;
+}
+
+.glass-panel {
+  background: rgba(22, 22, 31, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.neon-border {
+  position: relative;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(191, 90, 242, 0.3), rgba(0, 255, 136, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(191, 90, 242, 0.5), 0 0 20px rgba(191, 90, 242, 0.3);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.text-glow-pink {
+  text-shadow: 0 0 10px rgba(255, 107, 157, 0.5), 0 0 20px rgba(255, 107, 157, 0.3);
+}
+
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d4ff, #bf5af2, #00ff88, transparent);
+}
+
+input, select, textarea {
+  background-color: #1e1e2a !important;
+  border-color: #2a2a3a !important;
+  color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #888899 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #00d4ff !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
 }

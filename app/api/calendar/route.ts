@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     // Crear evento
     const event = {
       summary: `📚 ${asignatura}`,
-      description: tipo_tarea || 'Sesión de estudio GIOHUB',
+      description: tipo_tarea || 'Sesión de estudio DeepWorkOS',
       start: {
         dateTime: inicio.toISOString(),
         timeZone: 'Europe/Madrid',

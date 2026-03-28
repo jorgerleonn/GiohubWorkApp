@@ -128,3 +128,78 @@ export async function getHorasPorDia(dias: number = 30): Promise<EstadisticaPorD
 
   return estadisticas
 }
+
+export interface TreemapData {
+  name: string
+  color?: string
+  children?: TreemapData[]
+  value?: number
+}
+
+export async function getTreemapData(): Promise<TreemapData> {
+  const supabase = createServerClient()
+  const clerkId = await getUserId()
+
+  const { data, error } = await supabase
+    .from('sesiones_estudio')
+    .select(`
+      minutos_estudio,
+      tipo_tarea,
+      asignatura:asignaturas(id, nombre, color)
+    `)
+    .eq('clerk_id', clerkId)
+
+  if (error) {
+    console.error('Error al obtener datos para treemap:', error)
+    return { name: 'Estudio', children: [] }
+  }
+
+  const treemapMap = new Map<string, Map<string, number>>()
+
+  data.forEach((sesion: any) => {
+    if (!sesion.asignatura) return
+
+    const asignaturaNombre = sesion.asignatura.nombre
+    const tipoTarea = sesion.tipo_tarea || 'Sin tipo'
+    const color = sesion.asignatura.color
+
+    if (!treemapMap.has(asignaturaNombre)) {
+      treemapMap.set(asignaturaNombre, new Map())
+    }
+
+    const tipoMap = treemapMap.get(asignaturaNombre)!
+    const currentValue = tipoMap.get(tipoTarea) || 0
+    tipoMap.set(tipoTarea, currentValue + sesion.minutos_estudio)
+
+    if (!tipoMap.has('_color')) {
+      (tipoMap as any).set('_color', color)
+    }
+  })
+
+  const children: TreemapData[] = []
+
+  treemapMap.forEach((tipoMap, asignaturaNombre) => {
+    const color = (tipoMap.get('_color') as unknown) as string | undefined
+    const tipoChildren: TreemapData[] = []
+
+    tipoMap.forEach((value, tipo) => {
+      if (tipo !== '_color') {
+        tipoChildren.push({
+          name: tipo,
+          value: Math.round(value / 60 * 100) / 100
+        })
+      }
+    })
+
+    children.push({
+      name: asignaturaNombre,
+      color: color || undefined,
+      children: tipoChildren.length > 0 ? tipoChildren : [{ name: 'Sin tareas', value: 0.1 }]
+    })
+  })
+
+  return {
+    name: 'Estudio',
+    children: children.length > 0 ? children : [{ name: 'Sin datos', value: 1, children: [] }]
+  }
+}
