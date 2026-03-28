@@ -23,6 +23,9 @@ export default function WorkPage() {
   const [asignaturaSeleccionada, setAsignaturaSeleccionada] = useState('')
   const [tipoTarea, setTipoTareaLocal] = useState('')
   const [modo, setModo] = useState<'pomodoro' | 'flowtime'>('flowtime')
+  const [breakRatio, setBreakRatio] = useState(4) // 1:4 ratio by default for flowtime
+  const [pomodoroDuration, setPomodoroDuration] = useState(25) // minutes
+  const [pomodoroBreak, setPomodoroBreak] = useState(5) // minutes
   const [sesionesHoy, setSesionesHoy] = useState<SesionConAsignatura[]>([])
   const [totalMinutosHoy, setTotalMinutosHoy] = useState(0)
   const [mensaje, setMensaje] = useState<{tipo: 'success' | 'error', texto: string} | null>(null)
@@ -274,6 +277,58 @@ export default function WorkPage() {
                 </div>
               </div>
 
+              {modo === 'flowtime' && (
+                <div className="space-y-2">
+                  <Label className="text-deepworkos-text-muted">Descanso (Flowtime)</Label>
+                  <Select
+                    value={breakRatio.toString()}
+                    onChange={(e) => setBreakRatio(parseInt(e.target.value))}
+                    className="bg-deepworkos-bg-dark border-deepworkos-border text-white"
+                  >
+                    <option value="2">1:2 (50% estudio, 50% descanso)</option>
+                    <option value="3">1:3 (25% descanso)</option>
+                    <option value="4">1:4 (20% descanso) - Recomendado</option>
+                    <option value="5">1:5 (16% descanso)</option>
+                    <option value="6">1:6 (14% descanso)</option>
+                    <option value="8">1:8 (11% descanso)</option>
+                    <option value="10">1:10 (9% descanso)</option>
+                  </Select>
+                </div>
+              )}
+
+              {modo === 'pomodoro' && (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-deepworkos-text-muted">Duración Pomodoro</Label>
+                    <Select
+                      value={pomodoroDuration.toString()}
+                      onChange={(e) => setPomodoroDuration(parseInt(e.target.value))}
+                      className="bg-deepworkos-bg-dark border-deepworkos-border text-white"
+                    >
+                      <option value="15">15 minutos</option>
+                      <option value="20">20 minutos</option>
+                      <option value="25">25 minutos - Clásico</option>
+                      <option value="30">30 minutos</option>
+                      <option value="45">45 minutos</option>
+                      <option value="60">60 minutos</option>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-deepworkos-text-muted">Descanso Pomodoro</Label>
+                    <Select
+                      value={pomodoroBreak.toString()}
+                      onChange={(e) => setPomodoroBreak(parseInt(e.target.value))}
+                      className="bg-deepworkos-bg-dark border-deepworkos-border text-white"
+                    >
+                      <option value="5">5 minutos</option>
+                      <option value="10">10 minutos</option>
+                      <option value="15">15 minutos</option>
+                      <option value="20">20 minutos</option>
+                    </Select>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label className="text-deepworkos-text-muted">Opciones</Label>
                 <label className="flex items-center gap-2 p-3 bg-deepworkos-card-secondary/50 rounded-lg cursor-pointer border border-deepworkos-border hover:border-deepworkos-turquoise transition-colors">
@@ -289,7 +344,12 @@ export default function WorkPage() {
             </div>
 
             <div className="border-t border-deepworkos-border/50 pt-6">
-              <Timer onComplete={handleTimerComplete} modo={modo} />
+              <Timer 
+                onComplete={handleTimerComplete} 
+                modo={modo} 
+                breakRatio={modo === 'flowtime' ? breakRatio : pomodoroBreak}
+                pomodoroDuration={modo === 'pomodoro' ? pomodoroDuration : 0}
+              />
             </div>
           </div>
 
