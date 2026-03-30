@@ -28,14 +28,27 @@ export async function POST(req: NextRequest) {
     
     // Obtener token de Google desde Clerk
     console.log('User ID:', userId)
-    const oauthAccessTokenResponse = await clerkClient.users.getUserOauthAccessToken(userId, 'google')
-    console.log('OAuth Response:', JSON.stringify(oauthAccessTokenResponse, null, 2))
+    console.log('Request body:', JSON.stringify(body))
+    
+    let oauthAccessTokenResponse
+    try {
+      oauthAccessTokenResponse = await clerkClient.users.getUserOauthAccessToken(userId, 'google')
+      console.log('OAuth Response:', JSON.stringify(oauthAccessTokenResponse, null, 2))
+    } catch (err) {
+      console.error('Error getting OAuth token:', err)
+      return NextResponse.json(
+        { error: 'Error al obtener token de Google. Asegúrate de tener Google conectado en tu perfil de Clerk.' },
+        { status: 401 }
+      )
+    }
+    
     const googleToken = oauthAccessTokenResponse.data[0]?.token
     console.log('Google Token:', googleToken ? 'EXISTS' : 'MISSING')
     
     if (!googleToken) {
+      console.log('No Google token found for user:', userId)
       return NextResponse.json(
-        { error: 'Google Calendar no conectado. Conecta tu cuenta de Google en tu perfil.' },
+        { error: 'Google Calendar no conectado. Ve a tu perfil de Clerk > Account > Connected Accounts y conecta Google.' },
         { status: 401 }
       )
     }

@@ -136,7 +136,7 @@ export default function WorkPage() {
       if (syncCalendar) {
         try {
           const asig = asignaturas.find(a => a.id === asignaturaSeleccionada)
-          await fetch('/api/calendar', {
+          const response = await fetch('/api/calendar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -147,8 +147,15 @@ export default function WorkPage() {
               hora_final: horaFinal
             })
           })
-          mostrarMensaje('success', `Sesión guardada (${minutos} min) y sincronizada con Calendar`)
-        } catch {
+          const data = await response.json()
+          if (response.ok) {
+            mostrarMensaje('success', `Sesión guardada (${minutos} min) y sincronizada con Calendar`)
+          } else {
+            console.error('Calendar error:', data)
+            mostrarMensaje('success', `Sesión guardada (${minutos} min) - ${data.error || 'Error al sincronizar Calendar'}`)
+          }
+        } catch (error) {
+          console.error('Calendar fetch error:', error)
           mostrarMensaje('success', `Sesión guardada (${minutos} min) - Error al sincronizar Calendar`)
         }
       } else {
