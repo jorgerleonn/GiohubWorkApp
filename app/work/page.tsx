@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Timer } from '@/components/work/Timer'
+import { TodoList } from '@/components/work/TodoList'
 import { useTimerStore } from '@/lib/store/timerStore'
 import { getAsignaturas } from '@/lib/actions/asignaturas'
 import { createSesion, getSesionesHoy, deleteSesion } from '@/lib/actions/sesiones'
@@ -353,6 +354,7 @@ export default function WorkPage() {
                   mostrarMensaje('success', '¡Descanso completado! Puedes iniciar una nueva sesión.')
                 }}
               />
+              <TodoList asignaturas={asignaturas} currentAsignaturaId={asignaturaSeleccionada} />
             </div>
           </div>
 
