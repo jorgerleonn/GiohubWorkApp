@@ -14,7 +14,7 @@ interface TimerProps {
 
 type TimerMode = 'idle' | 'study' | 'break'
 
-export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, onBreakComplete }: TimerProps) {
+export function Timer({ onComplete, modo: modoProp, breakRatio: breakRatioProp = 0, pomodoroDuration: pomodoroDurationProp = 0, onBreakComplete }: TimerProps) {
   const { 
     segundos: storeSegundos,
     activo: storeActivo,
@@ -28,6 +28,16 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     setPauseStartTime,
     reset: storeReset
   } = useTimerStore()
+  
+  const modoRef = useRef(modoProp)
+  const breakRatioRef = useRef(breakRatioProp)
+  const pomodoroDurationRef = useRef(pomodoroDurationProp)
+
+  useEffect(() => {
+    modoRef.current = modoProp
+    breakRatioRef.current = breakRatioProp
+    pomodoroDurationRef.current = pomodoroDurationProp
+  }, [modoProp, breakRatioProp, pomodoroDurationProp])
   
   const [timerMode, setTimerMode] = useState<TimerMode>('idle')
   const [breakSecondsLeft, setBreakSecondsLeft] = useState(0)
@@ -56,11 +66,78 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     startTimeRef.current = null
     pauseStartTimeRef.current = null
     storeReset()
+    localStorage.removeItem('deepworkos-timer-local')
   }, [clearTimer, storeReset])
 
   useEffect(() => {
     return () => clearTimer()
   }, [clearTimer])
+
+  const hasCompletedBreak = useRef(false)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('deepworkos-timer-local')
+    console.log('Loading from localStorage:', saved)
+    if (saved) {
+      try {
+        const data = JSON.parse(saved)
+        console.log('Parsed data:', data)
+        
+        // Only restore if there's active timer data
+        if (data.localActivo === true || data.timerMode === 'study' || data.timerMode === 'break') {
+          console.log('Restoring timer state...')
+          if (data.timerMode) setTimerMode(data.timerMode)
+          if (data.breakSecondsLeft !== undefined) setBreakSecondsLeft(data.breakSecondsLeft)
+          if (data.localSegundos !== undefined) setLocalSegundos(data.localSegundos)
+          if (data.localActivo !== undefined) setLocalActivo(data.localActivo)
+          if (data.localPausado !== undefined) setLocalPausado(data.localPausado)
+          if (data.startTimeRef) startTimeRef.current = data.startTimeRef
+          if (data.pauseStartTimeRef) pauseStartTimeRef.current = data.pauseStartTimeRef
+          if (data.modo) modoRef.current = data.modo
+          if (data.pomodoroDuration) pomodoroDurationRef.current = data.pomodoroDuration
+          if (data.breakRatio) breakRatioRef.current = data.breakRatio
+          
+          if (data.localActivo && data.startTimeRef && !data.localPausado) {
+            let adjustedStartTime = data.startTimeRef
+            if (data.pauseStartTimeRef) {
+              const pausedDuration = Date.now() - data.pauseStartTimeRef
+              adjustedStartTime = data.startTimeRef + pausedDuration
+            }
+            startTimeRef.current = adjustedStartTime
+            pauseStartTimeRef.current = null
+            const elapsed = Math.floor((Date.now() - adjustedStartTime) / 1000)
+            console.log('Elapsed seconds:', elapsed)
+            if (data.timerMode === 'break' && data.breakSecondsLeft > 0) {
+              const targetBreak = data.breakSecondsLeft - elapsed
+              setBreakSecondsLeft(Math.max(0, targetBreak))
+            } else {
+              setLocalSegundos(elapsed)
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error loading timer state:', e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const dataToSave = {
+      timerMode,
+      breakSecondsLeft,
+      localSegundos,
+      localActivo,
+      localPausado,
+      startTimeRef: startTimeRef.current,
+      pauseStartTimeRef: pauseStartTimeRef.current,
+      modo: modoRef.current,
+      pomodoroDuration: pomodoroDurationRef.current,
+      breakRatio: breakRatioRef.current
+    }
+    localStorage.setItem('deepworkos-timer-local', JSON.stringify(dataToSave))
+  }, [timerMode, breakSecondsLeft, localSegundos, localActivo, localPausado])
+
+
 
   useEffect(() => {
     if (!localActivo || localPausado) {
@@ -68,10 +145,15 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
       return
     }
 
+    if (timerMode === 'break' && breakSecondsLeft <= 0 && !hasCompletedBreak.current) {
+      return
+    }
+
     const tick = () => {
       if (timerMode === 'break' && breakSecondsLeft > 0) {
         setBreakSecondsLeft(prev => {
           if (prev <= 1) {
+            hasCompletedBreak.current = true
             clearTimer()
             setLocalActivo(false)
             setLocalPausado(false)
@@ -84,8 +166,8 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
           }
           return prev - 1
         })
-      } else if (modo === 'pomodoro' && pomodoroDuration > 0 && timerMode === 'study') {
-        const targetSeconds = pomodoroDuration * 60
+      } else if (modoRef.current === 'pomodoro' && pomodoroDurationRef.current > 0 && timerMode === 'study') {
+        const targetSeconds = pomodoroDurationRef.current * 60
         const elapsed = Math.floor((Date.now() - (startTimeRef.current || Date.now())) / 1000)
         const remaining = targetSeconds - elapsed
         
@@ -95,8 +177,8 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
           setLocalActivo(false)
           setLocalPausado(false)
           
-          if (breakRatio > 0 && studySeconds >= 60) {
-            const breakSeconds = breakRatio * 60
+          if (breakRatioRef.current > 0 && studySeconds >= 60) {
+            const breakSeconds = breakRatioRef.current * 60
             setBreakSecondsLeft(breakSeconds)
             setTimerMode('break')
             setLocalActivo(true)
@@ -110,7 +192,7 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
         } else {
           setLocalSegundos(remaining)
         }
-      } else if (modo === 'flowtime' && timerMode === 'study') {
+      } else if (modoRef.current === 'flowtime' && timerMode === 'study') {
         if (startTimeRef.current) {
           let adjustedStartTime = startTimeRef.current
           if (pauseStartTimeRef.current) {
@@ -127,7 +209,7 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     intervalRef.current = setInterval(tick, 1000)
 
     return clearTimer
-  }, [localActivo, localPausado, timerMode, breakSecondsLeft, modo, pomodoroDuration, breakRatio, onComplete, onBreakComplete, reset, clearTimer])
+  }, [localActivo, localPausado, timerMode, breakSecondsLeft, onComplete, onBreakComplete, reset, clearTimer])
 
   const formatearTiempo = (segs: number): string => {
     const horas = Math.floor(segs / 3600)
@@ -141,6 +223,7 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
   }
 
   const handleStart = () => {
+    hasCompletedBreak.current = false
     setTimerMode('study')
     setBreakSecondsLeft(0)
     
@@ -149,8 +232,8 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     startTimeRef.current = Date.now()
     pauseStartTimeRef.current = null
     
-    if (modo === 'pomodoro') {
-      setLocalSegundos(pomodoroDuration * 60)
+    if (modoRef.current === 'pomodoro') {
+      setLocalSegundos(pomodoroDurationRef.current * 60)
     } else {
       setLocalSegundos(0)
     }
@@ -187,8 +270,8 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
       return
     }
     
-    if (modo === 'pomodoro' && pomodoroDuration > 0) {
-      finalSeconds = pomodoroDuration * 60 - localSegundos
+    if (modoRef.current === 'pomodoro' && pomodoroDurationRef.current > 0) {
+      finalSeconds = pomodoroDurationRef.current * 60 - localSegundos
       if (finalSeconds < 0) finalSeconds = 0
     } else if (startTimeRef.current) {
       let adjustedStartTime = startTimeRef.current
@@ -207,8 +290,9 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     setLocalActivo(false)
     setLocalPausado(false)
     
-    if (modo === 'flowtime' && breakRatio > 0 && finalSeconds >= 60) {
-      const breakSeconds = Math.max(60, Math.floor(finalSeconds / breakRatio))
+    if (modoRef.current === 'flowtime' && breakRatioRef.current > 0 && finalSeconds >= 60) {
+      const breakSeconds = Math.max(60, Math.floor(finalSeconds / breakRatioRef.current))
+      hasCompletedBreak.current = false
       setBreakSecondsLeft(breakSeconds)
       setTimerMode('break')
       setLocalActivo(true)
@@ -226,7 +310,7 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
     reset()
   }
 
-  const isPomodoro = modo === 'pomodoro' && pomodoroDuration > 0
+  const isPomodoro = modoRef.current === 'pomodoro' && pomodoroDurationRef.current > 0
   const isBreak = timerMode === 'break'
   const displaySeconds = isBreak ? breakSecondsLeft : localSegundos
 
@@ -305,7 +389,7 @@ export function Timer({ onComplete, modo, breakRatio = 0, pomodoroDuration = 0, 
         <p>Modo: <span className={`font-medium ${
           isBreak ? 'text-deepworkos-turquoise' : 'text-white'
         }`}>
-          {isBreak ? 'Descanso' : (modo === 'pomodoro' ? 'Pomodoro' : 'Flowtime')}
+          {isBreak ? 'Descanso' : (modoRef.current === 'pomodoro' ? 'Pomodoro' : 'Flowtime')}
         </span></p>
       </div>
     </div>

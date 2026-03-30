@@ -349,6 +349,9 @@ export default function WorkPage() {
                 modo={modo} 
                 breakRatio={modo === 'flowtime' ? breakRatio : pomodoroBreak}
                 pomodoroDuration={modo === 'pomodoro' ? pomodoroDuration : 0}
+                onBreakComplete={() => {
+                  mostrarMensaje('success', '¡Descanso completado! Puedes iniciar una nueva sesión.')
+                }}
               />
             </div>
           </div>
